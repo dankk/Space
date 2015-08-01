@@ -23,9 +23,16 @@ public class Asteroid extends GameObject
         width = w;
         height = h;
 
-        xSpeed = rand.nextInt(10) - 5;
         ySpeed = rand.nextInt(20) + 10;
 
+        if(x < GamePanel.WIDTH /2)
+        {
+            xSpeed = ySpeed/5;
+        }
+        else
+        {
+            xSpeed = -(ySpeed/5);
+        }
         spritesheet = bitmap;
     }
 

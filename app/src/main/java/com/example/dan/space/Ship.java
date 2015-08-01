@@ -12,17 +12,21 @@ public class Ship extends GameObject
     private boolean right;
     private boolean left;
     private int maxAccel = 5;
+    public int health;
+    public int score;
 
     private Animation animation = new Animation();
 
     public Ship(Bitmap bitmap, int w, int h, int numFrames)
     {
         x = GamePanel.WIDTH / 2;
-        y = GamePanel.HEIGHT - 100;
+        y = GamePanel.HEIGHT - 150;
         dx = 0;
 
         height = h;
         width = w;
+
+        health = 100;
 
         Bitmap[] image = new Bitmap[numFrames];
         spritesheet = bitmap;
@@ -70,13 +74,26 @@ public class Ship extends GameObject
         {
             x = GamePanel.WIDTH / 2;
             stopMoving();
+            resetHealth();
+            resetScore();
         }
         if(x < 0)
         {
             x = GamePanel.WIDTH / 2;
             stopMoving();
+            resetHealth();
+            resetScore();
         }
         x += dx*2;
+    }
+
+    public void resetHealth()
+    {
+        health = 100;
+    }
+    public void resetScore()
+    {
+        score = 0;
     }
 
     public void draw(Canvas canvas)

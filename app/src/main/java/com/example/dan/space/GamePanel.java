@@ -5,7 +5,10 @@ import android.appwidget.AppWidgetHost;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -104,7 +107,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
         ship.update();
 
         long asteroidElapsed = (System.nanoTime() - asteroidStartTimer)/1000000;
-        if(asteroidElapsed > 2000)
+        if(asteroidElapsed > 1000)
         {
 
             asteroids.add(new Asteroid(BitmapFactory.decodeResource(getResources(), R.drawable.asteroid),
@@ -119,17 +122,31 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
 
             if(collision(asteroids.get(i), ship))
             {
-                ship.x = GamePanel.WIDTH / 2;
-                ship.stopMoving();
+                ship.health -= 25;
+                asteroids.remove(i);
+                System.out.println("health: " + ship.health);
             }
 
 
             if(asteroids.get(i).getY() > HEIGHT + 30)
+            {
                 asteroids.remove(i);
+                ship.score++;
+            }
         }
 
         rSide.update();
         lSide.update();
+
+        if(ship.health <= 0)
+        {
+            ship.resetHealth();
+            ship.resetScore();
+            ship.stopMoving();
+            ship.x = GamePanel.WIDTH/2;
+
+            asteroids.clear();
+        }
 
     }
 
@@ -151,7 +168,20 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
             for(Asteroid a: asteroids)
                 a.draw(canvas);
 
+            drawText(canvas);
             canvas.restoreToCount(savedState);
         }
+    }
+
+    public void drawText(Canvas canvas)
+    {
+        Paint paint = new Paint();
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(20);
+        paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+
+        canvas.drawText("Health: " + ship.health, 50, HEIGHT - 50, paint);
+        canvas.drawText("Score: " + ship.score, WIDTH - 150, HEIGHT - 50, paint);
+
     }
 }
