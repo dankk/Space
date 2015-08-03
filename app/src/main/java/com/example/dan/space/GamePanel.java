@@ -26,6 +26,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
     public static final int HEIGHT = 856;
     public Background bg, rSide, lSide;
     public Ship ship;
+    public Health health;
     float scaleY;
     float scaleX;
     private long asteroidStartTimer;
@@ -62,6 +63,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
         rSide = new Background(BitmapFactory.decodeResource(getResources(),R.drawable.side), WIDTH - 10, 0, 10, GamePanel.HEIGHT, 10);
 
         ship = new Ship(BitmapFactory.decodeResource(getResources(),R.drawable.ship), 50, 50, 5);
+
+        health = (new Health(BitmapFactory.decodeResource(getResources(), R.drawable.health),
+                WIDTH/2, -30, 15, 15));
         asteroids = new ArrayList<Asteroid>();
 
         thread = new MainThread(getHolder(), this);
@@ -88,6 +92,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
             ship.moveRight(true);
 
         }
+        ship.playing = true;
 
         return super.onTouchEvent(event);
     }
@@ -103,52 +108,76 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
 
     public void update()
     {
-        bg.update();
-        ship.update();
-
-        long asteroidElapsed = (System.nanoTime() - asteroidStartTimer)/1000000;
-        if(asteroidElapsed > 1000)
+        if(ship.playing)
         {
+            bg.update();
+            ship.update();
 
-            asteroids.add(new Asteroid(BitmapFactory.decodeResource(getResources(), R.drawable.asteroid),
-                    (int) (rand.nextDouble() * WIDTH), -30, 20, 20));
+            long asteroidElapsed = (System.nanoTime() - asteroidStartTimer) / 1000000;
 
-            asteroidStartTimer = System.nanoTime();
-        }
+            if (asteroidElapsed > 500) {
 
-        for(int i = 0; i < asteroids.size(); i++)
-        {
-            asteroids.get(i).update();
+                asteroids.add(new Asteroid(BitmapFactory.decodeResource(getResources(), R.drawable.asteroid),
+                        (int) (rand.nextDouble() * WIDTH), -30, 20, 20));
 
-            if(collision(asteroids.get(i), ship))
-            {
-                ship.health -= 25;
-                asteroids.remove(i);
-                System.out.println("health: " + ship.health);
-            }
-
-
-            if(asteroids.get(i).getY() > HEIGHT + 30)
-            {
-                asteroids.remove(i);
+                asteroidStartTimer = System.nanoTime();
                 ship.score++;
             }
-        }
 
-        rSide.update();
-        lSide.update();
+            for (int i = 0; i < asteroids.size(); i++) {
 
-        if(ship.health <= 0)
-        {
-            ship.resetHealth();
-            ship.resetScore();
-            ship.stopMoving();
-            ship.x = GamePanel.WIDTH/2;
+                asteroids.get(i).update();
 
-            asteroids.clear();
+                if (collision(asteroids.get(i), ship)) {
+                    if(ship.shield == 0)
+                    {
+                        ship.resetGame();
+                    }
+                    else
+                    {
+                        ship.shield -= 25;
+                        asteroids.remove(i);
+                    }
+                }
+
+
+                if (asteroids.get(i).getY() > HEIGHT + 30) {
+                    asteroids.remove(i);
+                }
+            }
+
+            if(ship.score % 50 == 0 && ship.score > 0)
+            {
+                health.dy = 20;
+            }
+
+            if(collision(health, ship))
+            {
+                health.resetHealth();
+                if(ship.shield < 100)
+                    ship.shield += 25;
+            }
+
+            if(health.getY() > HEIGHT + 30)
+            {
+                health.resetHealth();
+            }
+
+
+            if (!ship.playing)
+            {
+                asteroids.clear();
+                health.resetHealth();
+            }
+
+            health.update();
+            rSide.update();
+            lSide.update();
+
         }
 
     }
+
 
     @Override
     public void draw(Canvas canvas)
@@ -164,6 +193,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
             rSide.draw(canvas);
             lSide.draw(canvas);
             ship.draw(canvas);
+            health.draw(canvas);
 
             for(Asteroid a: asteroids)
                 a.draw(canvas);
@@ -180,8 +210,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
         paint.setTextSize(20);
         paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
 
-        canvas.drawText("Health: " + ship.health, 50, HEIGHT - 50, paint);
+        canvas.drawText("Shield: " + ship.shield + "%", 50, HEIGHT - 50, paint);
         canvas.drawText("Score: " + ship.score, WIDTH - 150, HEIGHT - 50, paint);
+        canvas.drawText("Best Score: " + ship.best, WIDTH - 150, 20, paint);
 
     }
 }

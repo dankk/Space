@@ -11,22 +11,24 @@ public class Ship extends GameObject
     private Bitmap spritesheet;
     private boolean right;
     private boolean left;
-    private int maxAccel = 5;
-    public int health;
+    private int maxAccel = 6;
+    public int shield;
     public int score;
+    public int best;
+    public boolean playing;
 
     private Animation animation = new Animation();
 
     public Ship(Bitmap bitmap, int w, int h, int numFrames)
     {
-        x = GamePanel.WIDTH / 2;
+        x = (GamePanel.WIDTH / 2) - w/2;
         y = GamePanel.HEIGHT - 150;
         dx = 0;
 
         height = h;
         width = w;
 
-        health = 100;
+        shield = 100;
 
         Bitmap[] image = new Bitmap[numFrames];
         spritesheet = bitmap;
@@ -58,11 +60,11 @@ public class Ship extends GameObject
 
         if(right)
         {
-            dx += 1;
+            dx += 2;
         }
         if(left)
         {
-            dx -= 1;
+            dx -= 2;
         }
 
         if(dx>maxAccel)
@@ -70,26 +72,30 @@ public class Ship extends GameObject
         if(dx < -maxAccel)
             dx = -maxAccel;
 
-        if(x > GamePanel.WIDTH - width)
+        if(x > GamePanel.WIDTH || x < 0 - width)
         {
-            x = GamePanel.WIDTH / 2;
-            stopMoving();
-            resetHealth();
-            resetScore();
+            resetGame();
         }
-        if(x < 0)
-        {
-            x = GamePanel.WIDTH / 2;
-            stopMoving();
-            resetHealth();
-            resetScore();
-        }
+
         x += dx*2;
+    }
+
+    public void resetGame()
+    {
+        playing = false;
+
+        if(score > best)
+            best = score;
+
+        x = (GamePanel.WIDTH / 2) - width/2;
+        stopMoving();
+        resetHealth();
+        resetScore();
     }
 
     public void resetHealth()
     {
-        health = 100;
+        shield = 100;
     }
     public void resetScore()
     {
