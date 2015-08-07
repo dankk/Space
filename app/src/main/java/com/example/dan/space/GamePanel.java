@@ -27,12 +27,15 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
     public Background bg, rSide, lSide;
     public Ship ship;
     public Health health;
+    public Shield shield;
     float scaleY;
     float scaleX;
     private long asteroidStartTimer;
     private Random rand = new Random();
     private ArrayList<Asteroid> asteroids;
+    private ArrayList<Explosion> explosions;
     private MainThread thread;
+
 
     public GamePanel(Context context)
     {
@@ -64,9 +67,13 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
 
         ship = new Ship(BitmapFactory.decodeResource(getResources(),R.drawable.ship), 50, 50, 5);
 
+        shield = new Shield(BitmapFactory.decodeResource(getResources(), R.drawable.shield),
+                ship.getX() - 7, ship.getY() - 5, 60, 60);
+
         health = (new Health(BitmapFactory.decodeResource(getResources(), R.drawable.health),
                 WIDTH/2, -30, 15, 15));
         asteroids = new ArrayList<Asteroid>();
+        explosions = new ArrayList<Explosion>();
 
         thread = new MainThread(getHolder(), this);
         thread.setRunning(true);
@@ -78,21 +85,28 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
 
     {
         int x = (int) event.getX();
+        int y = (int) event.getY();
 
-        if(x < (WIDTH/2)*scaleX)
-        {
-            ship.moveRight(false);
-            ship.moveLeft(true);
-            System.out.println("left");
-        }
-        else
-        {
-            System.out.println("right");
-            ship.moveLeft(false);
-            ship.moveRight(true);
+        if(x > ((WIDTH/2) - 100)*scaleX && x < ((WIDTH/2) + 100)*scaleX && y > ((HEIGHT/2) - 100)*scaleY && y < ((HEIGHT/2) + 100)*scaleY)
+            ship.playing = true;
 
+
+        if(ship.playing == true)
+        {
+
+            if (x < (WIDTH / 2) * scaleX) {
+                ship.moveRight(false);
+                ship.moveLeft(true);
+                System.out.println("left");
+            }
+            else
+            {
+                System.out.println("right");
+                ship.moveLeft(false);
+                ship.moveRight(true);
+
+            }
         }
-        ship.playing = true;
 
         return super.onTouchEvent(event);
     }
@@ -117,8 +131,16 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
 
             if (asteroidElapsed > 500) {
 
+                ArrayList<Trail> trails = new ArrayList<Trail>();
+                for(int i = 0; i < 6; i++)
+                {
+                    trails.add(new Trail(BitmapFactory.decodeResource(getResources(),R.drawable.trail),
+                            -10, -10, 10, 10));
+                }
+
                 asteroids.add(new Asteroid(BitmapFactory.decodeResource(getResources(), R.drawable.asteroid),
-                        (int) (rand.nextDouble() * WIDTH), -30, 20, 20));
+                        (int) (rand.nextDouble() * WIDTH), -30, 20, 20, trails));
+
 
                 asteroidStartTimer = System.nanoTime();
                 ship.score++;
@@ -136,14 +158,33 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
                     else
                     {
                         ship.shield -= 25;
+                        explosions.add(new Explosion(BitmapFactory.decodeResource(getResources(),R.drawable.explosion),
+                                asteroids.get(i).getX(), asteroids.get(i).getY(), 50, 50, 25));
+                        asteroids.get(i).trails.clear();
                         asteroids.remove(i);
                     }
                 }
 
 
                 if (asteroids.get(i).getY() > HEIGHT + 30) {
+                    asteroids.get(i).trails.clear();
                     asteroids.remove(i);
                 }
+
+            }
+
+            if(ship.shield == 0)
+            {
+                shield.active = false;
+            }
+            else
+            {
+                shield.active = true;
+            }
+
+            for(int i = 0; i < explosions.size(); i++)
+            {
+                explosions.get(i).update();
             }
 
             if(ship.score % 50 == 0 && ship.score > 0)
@@ -166,7 +207,13 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
 
             if (!ship.playing)
             {
+
                 asteroids.clear();
+                for(Asteroid a: asteroids)
+                {
+                    a.trails.clear();
+                }
+                explosions.clear();
                 health.resetHealth();
             }
 
@@ -174,6 +221,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
             rSide.update();
             lSide.update();
 
+            shield.update(ship.getX() - 7, ship.getY() - 5);
         }
 
     }
@@ -194,9 +242,24 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
             lSide.draw(canvas);
             ship.draw(canvas);
             health.draw(canvas);
+            shield.draw(canvas);
+
 
             for(Asteroid a: asteroids)
+            {
                 a.draw(canvas);
+                for(Trail t: a.trails)
+                {
+                    t.draw(canvas);
+                }
+            }
+
+            for(Explosion e: explosions)
+            {
+                if(!e.played)
+                    e.draw(canvas);
+            }
+
 
             drawText(canvas);
             canvas.restoreToCount(savedState);
@@ -210,9 +273,15 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
         paint.setTextSize(20);
         paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
 
+        if(!ship.playing)
+        {
+            canvas.drawText("TOUCH HERE TO START", (WIDTH/2) - 100, HEIGHT/2, paint);
+        }
+
         canvas.drawText("Shield: " + ship.shield + "%", 50, HEIGHT - 50, paint);
         canvas.drawText("Score: " + ship.score, WIDTH - 150, HEIGHT - 50, paint);
         canvas.drawText("Best Score: " + ship.best, WIDTH - 150, 20, paint);
 
     }
+
 }

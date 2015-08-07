@@ -9,10 +9,11 @@ import android.graphics.Canvas;
 public class Animation
 {
     private Bitmap[] frames;
-    private int currentFrame;
+    public int currentFrame;
     private long startTime;
     private long delay;
     private long elapsed;
+    private boolean playedOnce;
 
     public void setFrames(Bitmap[] frames)
     {
@@ -38,6 +39,7 @@ public class Animation
         if(currentFrame == frames.length)
         {
             currentFrame = 0;
+            playedOnce = true;
         }
     }
 
@@ -46,5 +48,9 @@ public class Animation
         return frames[currentFrame];
     }
 
+    public boolean playedOnce()
+    {
+        return playedOnce;
+    }
 
 }

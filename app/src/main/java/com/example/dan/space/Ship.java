@@ -39,7 +39,7 @@ public class Ship extends GameObject
         }
 
         animation.setFrames(image);
-        animation.setDelay(10);
+        animation.setDelay(20);
 
 
     }
