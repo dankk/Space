@@ -1,8 +1,7 @@
 package com.example.dan.space;
 
-import android.app.Activity;
-import android.appwidget.AppWidgetHost;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -12,10 +11,8 @@ import android.graphics.Typeface;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.ResourceBundle;
 
 /**
  * Created by Dan on 25/07/2015.
@@ -35,7 +32,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
     private ArrayList<Asteroid> asteroids;
     private ArrayList<Explosion> explosions;
     private MainThread thread;
-
 
     public GamePanel(Context context)
     {
@@ -131,16 +127,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
 
             if (asteroidElapsed > 500) {
 
-                ArrayList<Trail> trails = new ArrayList<Trail>();
-                for(int i = 0; i < 6; i++)
-                {
-                    trails.add(new Trail(BitmapFactory.decodeResource(getResources(),R.drawable.trail),
-                            -10, -10, 10, 10));
-                }
-
                 asteroids.add(new Asteroid(BitmapFactory.decodeResource(getResources(), R.drawable.asteroid),
-                        (int) (rand.nextDouble() * WIDTH), -30, 20, 20, trails));
-
+                        (int) (rand.nextDouble() * WIDTH), -30, 20, 20));
 
                 asteroidStartTimer = System.nanoTime();
                 ship.score++;
@@ -160,14 +148,12 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
                         ship.shield -= 25;
                         explosions.add(new Explosion(BitmapFactory.decodeResource(getResources(),R.drawable.explosion),
                                 asteroids.get(i).getX(), asteroids.get(i).getY(), 50, 50, 25));
-                        asteroids.get(i).trails.clear();
                         asteroids.remove(i);
                     }
                 }
 
 
                 if (asteroids.get(i).getY() > HEIGHT + 30) {
-                    asteroids.get(i).trails.clear();
                     asteroids.remove(i);
                 }
 
@@ -209,10 +195,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
             {
 
                 asteroids.clear();
-                for(Asteroid a: asteroids)
-                {
-                    a.trails.clear();
-                }
                 explosions.clear();
                 health.resetHealth();
             }
@@ -248,10 +230,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
             for(Asteroid a: asteroids)
             {
                 a.draw(canvas);
-                for(Trail t: a.trails)
-                {
-                    t.draw(canvas);
-                }
             }
 
             for(Explosion e: explosions)

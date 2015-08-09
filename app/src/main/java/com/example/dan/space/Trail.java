@@ -1,30 +1,25 @@
 package com.example.dan.space;
 
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 
 /**
- * Created by Dan on 8/6/2015.
+ * Created by Dan on 8/8/2015.
  */
-public class Trail {
-
+public class Trail
+{
     private int x;
     private int y;
-    private int width;
-    private int height;
+    private int r;
 
-    private Bitmap spritesheet;
+    Paint paint = new Paint();
 
-    public Trail(Bitmap bitmap, int x, int y, int w, int h)
+    public Trail(int x, int y)
     {
         this.x = x;
         this.y = y;
-
-        width = w;
-        height = h;
-
-        spritesheet = bitmap;
-
+        r = 1;
     }
 
     public void update(int newX, int newY)
@@ -35,6 +30,11 @@ public class Trail {
 
     public void draw(Canvas canvas)
     {
-        canvas.drawBitmap(spritesheet, x, y, null);
+        paint.setColor(Color.CYAN);
+        paint.setStyle(Paint.Style.FILL);
+
+        canvas.drawCircle(x, y-5, r, paint);
+        canvas.drawCircle(x+5, y-5, r, paint);
+        canvas.drawCircle(x+10, y-5, r, paint);
     }
 }

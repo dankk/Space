@@ -1,7 +1,6 @@
 package com.example.dan.space;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 
 /**

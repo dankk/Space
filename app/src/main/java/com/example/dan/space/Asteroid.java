@@ -1,10 +1,9 @@
 package com.example.dan.space;
 
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.view.SurfaceHolder;
+import android.graphics.Color;
+import android.graphics.Paint;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -18,16 +17,17 @@ public class Asteroid extends GameObject
     private Random rand = new Random();
     private int xSpeed;
     private int ySpeed;
-    public ArrayList<Trail> trails;
+    private int j;
+    private ArrayList<Trail> trail;
 
-    public Asteroid(Bitmap bitmap, int x, int y, int w, int h, ArrayList<Trail> trails)
+    public Asteroid(Bitmap bitmap, int x, int y, int w, int h)
     {
         this.x = x;
         this.y = y;
         width = w;
         height = h;
 
-        this.trails = trails;
+        trail = new ArrayList<Trail>();
 
         ySpeed = rand.nextInt(15) + 10;
 
@@ -40,6 +40,12 @@ public class Asteroid extends GameObject
             xSpeed = -(ySpeed/5);
         }
         spritesheet = bitmap;
+
+        for(int i = 0; i < 6; i++)
+        {
+            trail.add(new Trail(x*i,y+i));
+        }
+
     }
 
     public void update()
@@ -47,15 +53,24 @@ public class Asteroid extends GameObject
         x += xSpeed;
         y += ySpeed;
 
-        for(int i = 0; i < trails.size(); i++)
+        if(xSpeed<0)
+            j = 7;
+        else
+            j = 2;
+
+        for(int i = 0; i < 6; i++)
         {
-            trails.get(i).update((x-(xSpeed*i))+5, y-(i*10));
+            trail.get(i).update((x-(xSpeed*i)+j), y-(i*10));
         }
     }
 
     public void draw(Canvas canvas)
     {
         canvas.drawBitmap(spritesheet, x, y, null);
+        for(Trail t: trail)
+        {
+            t.draw(canvas);
+        }
     }
 
     public int getXSpeed()
