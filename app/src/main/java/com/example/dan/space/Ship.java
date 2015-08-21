@@ -8,13 +8,12 @@ import android.graphics.Canvas;
  */
 public class Ship extends GameObject
 {
-    private Bitmap spritesheet;
     private boolean right;
     private boolean left;
     private int maxAccel = 6;
     public int shield;
     public int score;
-    public int best;
+    public static int best;
     public boolean playing;
 
     private Animation animation = new Animation();
@@ -31,11 +30,10 @@ public class Ship extends GameObject
         shield = 100;
 
         Bitmap[] image = new Bitmap[numFrames];
-        spritesheet = bitmap;
 
         for(int i = 0; i < image.length; i++)
         {
-            image[i] = Bitmap.createBitmap(spritesheet, i*width, 0, width, height);
+            image[i] = Bitmap.createBitmap(bitmap, i*width, 0, width, height);
         }
 
         animation.setFrames(image);
@@ -91,6 +89,8 @@ public class Ship extends GameObject
         stopMoving();
         resetHealth();
         resetScore();
+
+        GamePanel.drawEndExplosion = false;
     }
 
     public void resetHealth()

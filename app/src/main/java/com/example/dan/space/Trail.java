@@ -4,6 +4,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
+import java.util.Random;
+
 /**
  * Created by Dan on 8/8/2015.
  */
@@ -12,6 +14,7 @@ public class Trail
     private int x;
     private int y;
     private int r;
+    private Random rand = new Random();
 
     Paint paint = new Paint();
 
@@ -33,8 +36,8 @@ public class Trail
         paint.setColor(Color.CYAN);
         paint.setStyle(Paint.Style.FILL);
 
-        canvas.drawCircle(x, y-5, r, paint);
-        canvas.drawCircle(x+5, y-5, r, paint);
-        canvas.drawCircle(x+10, y-5, r, paint);
+        canvas.drawCircle(x+rand.nextInt(5), y-5, r, paint);
+        canvas.drawCircle(x+rand.nextInt(5)+5, y-5, r, paint);
+        canvas.drawCircle(x+rand.nextInt(5)+10, y-5, r, paint);
     }
 }

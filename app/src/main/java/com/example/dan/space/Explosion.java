@@ -17,12 +17,12 @@ public class Explosion
     public boolean played = false;
     private Animation animation = new Animation();
 
-    public Explosion(Bitmap bitmap, int x, int y, int w, int h, int numFrames)
+    public Explosion(Bitmap bitmap, int x, int y, int w, int h, int numFrames, int framesPerRow)
     {
         this.x = x;
         this.y = y;
-        this.width = w;
-        this.height = h;
+        width = w;
+        height = h;
 
         spritesheet = bitmap;
 
@@ -30,10 +30,12 @@ public class Explosion
 
         for(int i = 0; i < image.length; i++)
         {
-            if(i%5==0 && i>0)
+            if(i%framesPerRow==0 && i>0)
                 row++;
 
-            image[i] = Bitmap.createBitmap(spritesheet, (i-(5*row)), row*height, width, height);
+            image[i] = Bitmap.createBitmap(spritesheet, (i-(framesPerRow*row))*width, row*height, width, height);
+
+            //image[i] = Bitmap.createBitmap(spritesheet, i*width, 0, width, height);
 
         }
         animation.setFrames(image);
@@ -58,5 +60,10 @@ public class Explosion
             played = true;
         }
 
+    }
+
+    public boolean playedOnce()
+    {
+        return animation.playedOnce();
     }
 }
