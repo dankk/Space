@@ -1,10 +1,7 @@
-package com.example.dan.space;
+package mygame.example.dan.space;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.media.MediaPlayer;
 
 import java.util.ArrayList;
 import java.util.Random;

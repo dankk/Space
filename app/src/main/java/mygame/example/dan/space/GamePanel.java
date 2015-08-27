@@ -1,4 +1,4 @@
-package com.example.dan.space;
+package mygame.example.dan.space;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -265,7 +265,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
 
             if(ship.score % 50 == 0 && ship.score > 0)
             {
-                health.dy = 20;
+                health.dy = 10;
             }
 
             if(collision(health, ship))

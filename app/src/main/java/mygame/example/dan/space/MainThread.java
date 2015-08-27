@@ -1,4 +1,4 @@
-package com.example.dan.space;
+package mygame.example.dan.space;
 
 import android.graphics.Canvas;
 import android.view.SurfaceHolder;
