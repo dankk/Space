@@ -52,7 +52,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
         super(context);
 
         getHolder().addCallback(this);
-        thread = new MainThread(getHolder(), this);
 
         setFocusable(true);
 
@@ -86,8 +85,12 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
         scaleX = getWidth()/(WIDTH*1.f);
         scaleY = getHeight()/(HEIGHT*1.f);
 
-        thread.setRunning(true);
-        thread.start();
+        thread = new MainThread(getHolder(), this);
+
+        if(!thread.isRunning()) {
+            thread.setRunning(true);
+            thread.start();
+        }
 
         SharedPreferences prefs = this.getContext().getSharedPreferences("myPrefsKey", Context.MODE_PRIVATE);
         ship.best = prefs.getInt("key", 0); //0 is the default value

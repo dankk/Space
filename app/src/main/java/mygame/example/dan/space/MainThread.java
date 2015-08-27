@@ -92,6 +92,10 @@ public class MainThread extends Thread
         setRunning(false);
     }
 
+    public boolean isRunning(){
+        return running;
+    }
+
     public void setRunning(boolean b)
     {
         running = b;
