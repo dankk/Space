@@ -40,9 +40,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
     private MainThread thread;
     public static int best;
     MediaPlayer bgMusic;
-    MediaPlayer shieldRepair;
     SoundPool soundPool;
     int explodeId;
+    int repairSound;
     private boolean startTouch;
     public static boolean drawEndExplosion;
 
@@ -72,7 +72,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
         thread.stopRun();
         soundPool.release();
         bgMusic.release();
-        shieldRepair.release();
 
         asteroids.clear();
         asteroids = null;
@@ -93,12 +92,10 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
         SharedPreferences prefs = this.getContext().getSharedPreferences("myPrefsKey", Context.MODE_PRIVATE);
         ship.best = prefs.getInt("key", 0); //0 is the default value
 
-        bgMusic = MediaPlayer.create(this.getContext(), R.raw.bgmusic);
+        bgMusic = MediaPlayer.create(this.getContext(), R.raw.bgmusic5);
         bgMusic.setLooping(true);
 
         bgMusic.start();
-
-        shieldRepair = MediaPlayer.create(this.getContext(), R.raw.shieldrepair);
 
         bg = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.stars1), 0, 0,
                 GamePanel.WIDTH, GamePanel.HEIGHT, 5);
@@ -108,7 +105,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
         ship = new Ship(BitmapFactory.decodeResource(getResources(),R.drawable.ship2), 50, 50, 5);
 
         shield = new Shield(BitmapFactory.decodeResource(getResources(), R.drawable.shield),
-                ship.getX() - 7, ship.getY() - 7, 65, 65);
+                ship.getX() - 12, ship.getY() - 7, 75, 60);
 
         asteroids = new ArrayList<Asteroid>();
         explosions = new ArrayList<Explosion>();
@@ -128,13 +125,14 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
                     .setAudioAttributes(aa)
                     .build();
 
-            explodeId = soundPool.load(getContext(),  R.raw.explosion, 1);
         }
         else
         {
             soundPool = new SoundPool(5,AudioManager.STREAM_MUSIC,1);
-            explodeId = soundPool.load(getContext(),  R.raw.explosion, 1);
         }
+
+        repairSound = soundPool.load(getContext(), R.raw.shieldrepair, 1);
+        explodeId = soundPool.load(getContext(),  R.raw.explosion, 1);
 
 
 
@@ -276,7 +274,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
                 if(ship.shield < 100)
                 {
                     ship.shield += 25;
-                    shieldRepair.start();
+                    soundPool.play(repairSound,1,1,1,0,1);
                 }
             }
 
@@ -315,7 +313,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
                 shield.active = true;
             }*/
 
-            shield.update(ship.getX() - 7, ship.getY() - 7);
+            shield.update(ship.getX() - 12, ship.getY() - 7);
         }
 
     }
