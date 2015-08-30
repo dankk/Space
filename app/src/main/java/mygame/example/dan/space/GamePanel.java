@@ -44,6 +44,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
     int explodeId;
     int repairSound;
     private boolean startTouch;
+    private boolean displayInstructs;
     public static boolean drawEndExplosion;
 
 
@@ -137,6 +138,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
         repairSound = soundPool.load(getContext(), R.raw.shieldrepair, 1);
         explodeId = soundPool.load(getContext(),  R.raw.explosion, 1);
 
+        displayInstructs = false;
+
 
 
     }
@@ -150,9 +153,14 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
 
         if(!ship.playing)
         {
-            if (x > ((WIDTH / 2) - 100) * scaleX && x < ((WIDTH / 2) + 100) * scaleX && y > ((HEIGHT / 2) - 100) * scaleY && y < ((HEIGHT / 2) + 100) * scaleY) {
+
+            if (x > ((WIDTH / 2) - 50) * scaleX && x < ((WIDTH / 2) + 50) * scaleX && y > ((HEIGHT / 2) - 75) * scaleY && y < ((HEIGHT / 2) - 25) * scaleY) {
+                displayInstructs = false;
                 ship.playing = true;
                 startTouch = true;
+            }
+            if (x > ((WIDTH / 2) - 75) * scaleX && x < ((WIDTH / 2) + 75) * scaleX && y > ((HEIGHT / 2) + 50) * scaleY && y < ((HEIGHT / 2) + 100) * scaleY) {
+                displayInstructs = true;
             }
 
         }
@@ -368,11 +376,24 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
 
         if(!ship.playing)
         {
-            canvas.drawText("TOUCH HERE TO START", (WIDTH/2) - 100, HEIGHT/2, paint);
+            canvas.drawText("START", (WIDTH/2)-30, (HEIGHT/2) - 50, paint);
+
+            if(!displayInstructs)
+            {
+                canvas.drawText("INSTRUCTIONS", (WIDTH / 2) - 70, (HEIGHT / 2) + 75, paint);
+            }
+            else
+            {
+                canvas.drawText("Touch sides to move", (WIDTH/2) - 95, (HEIGHT / 2) + 75, paint);
+                canvas.drawText("Don't go over the edge", (WIDTH/2) - 105, (HEIGHT / 2) + 96, paint);
+                canvas.drawText("Impacts reduce shield by 25%", (WIDTH/2) - 130, (HEIGHT / 2) + 117, paint);
+                canvas.drawText("Collect 25% shield repair every 50 points", (WIDTH/2) - 185, (HEIGHT / 2) + 138, paint);
+                canvas.drawText("You die if you get hit with no shield", (WIDTH/2) - 155, (HEIGHT / 2) + 159, paint);
+            }
         }
 
-        canvas.drawText("Shield: " + ship.shield + "%", 50, HEIGHT - 50, paint);
-        canvas.drawText("Score: " + ship.score, WIDTH - 150, HEIGHT - 50, paint);
+        canvas.drawText("Shield: " + ship.shield + "%", 50, HEIGHT - 25, paint);
+        canvas.drawText("Score: " + ship.score, WIDTH - 150, HEIGHT - 25, paint);
         canvas.drawText("Best Score: " + ship.best, WIDTH - 150, 20, paint);
 
     }
